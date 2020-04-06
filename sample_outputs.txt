@@ -1,0 +1,308 @@
+#####INTERFACE POLLING
+
+Input file
+
+    [root@brain analytics_scripts]# cat polling.yaml
+    url: "http://10.204.52.79:35357/v3"
+    username: "admin"
+    password: "contrail123"
+    project_name: "admin"
+    user_domain_name: "Default"
+    project_domain_name: "Default"
+    vms:
+        - "c1"
+        - "c2"
+        - "c3"
+        - "nono"
+
+Output
+
+    [root@brain analytics_scripts]# python iface_polling.py
+    *** VM: c3 ***
+    running on compute2
+    +----------------+---------------+-------------------------------+-------+--------+----------------------+
+    | Interface Name |   IP Address  |            Network            | State | Active |      Statistics      |
+    +----------------+---------------+-------------------------------+-------+--------+----------------------+
+    |     "eth0"     | 192.168.10.10 | default-domain:admin:fourcade |  True |  True  |  Out Bytes: 457199   |
+    |                |               |                               |       |        |   In Bytes: 450085   |
+    |                |               |                               |       |        |  Out Packets: 10724  |
+    |                |               |                               |       |        | Input Pakcets: 10583 |
+    |                |               |                               |       |        |                      |
+    +----------------+---------------+-------------------------------+-------+--------+----------------------+
+    
+    *** VM: c2 ***
+    running on compute2
+    +----------------------------------------+--------------+-------------------------------+-------+--------+----------------------+
+    |             Interface Name             |  IP Address  |            Network            | State | Active |      Statistics      |
+    +----------------------------------------+--------------+-------------------------------+-------+--------+----------------------+
+    | "e7fdee27-788e-491b-a835-6a886745c182" | 192.168.10.4 | default-domain:admin:fourcade |  True |  True  |  Out Bytes: 474096   |
+    |                                        |              |                               |       |        |   In Bytes: 464869   |
+    |                                        |              |                               |       |        |  Out Packets: 11133  |
+    |                                        |              |                               |       |        | Input Pakcets: 10933 |
+    |                                        |              |                               |       |        |                      |
+    +----------------------------------------+--------------+-------------------------------+-------+--------+----------------------+
+    
+    *** VM: c1 ***
+    running on compute1
+    +----------------------------------------+--------------+-------------------------------+-------+--------+----------------------+
+    |             Interface Name             |  IP Address  |            Network            | State | Active |      Statistics      |
+    +----------------------------------------+--------------+-------------------------------+-------+--------+----------------------+
+    | "6f27fd54-b287-4ed1-aac0-602e96ea0510" | 192.168.20.3 |  default-domain:admin:wierer  |  True |  True  |  Out Bytes: 465024   |
+    |                                        |              |                               |       |        |     In Bytes: 0      |
+    |                                        |              |                               |       |        |  Out Packets: 11072  |
+    |                                        |              |                               |       |        |   Input Pakcets: 0   |
+    |                                        |              |                               |       |        |                      |
+    | "cae84676-cb4a-4f2c-b862-7792e0c2fd7f" | 192.168.10.3 | default-domain:admin:fourcade |  True |  True  |  Out Bytes: 476984   |
+    |                                        |              |                               |       |        |   In Bytes: 466555   |
+    |                                        |              |                               |       |        |  Out Packets: 11188  |
+    |                                        |              |                               |       |        | Input Pakcets: 10972 |
+    |                                        |              |                               |       |        |                      |
+    +----------------------------------------+--------------+-------------------------------+-------+--------+----------------------+
+    
+    The following VMs could not not polled: ['nono']
+    Poosible reasons:
+        - either not found with Nova
+        - or not in ACTIVE state
+
+#####VIRTUAL NETWORK STATISTICS
+
+Input file
+
+    [root@brain analytics_scripts]# cat networks.yaml
+    domains:
+    - name: "default-domain"
+        projects:
+        - name: "admin"
+            networks:
+            - "wierer"
+            - "fourcade"
+            - "nono"
+
+Output
+
+    ***** Network: wierer (FQDN default-domain:admin:wierer) *****
+    Network has 1 interfaces attached to it
+    +----------------------------------------+----------+------+--------+---------+----------+-------------+--------------+----------------+-----------------+-------------+--------------+----------------+-----------------+
+    |             Interface Name             | Compute  | IN B | OUT B  | IN pkts | OUT pkts | IN B (%cmp) | OUT B (%cmp) | IN pkts (%cmp) | OUT pkts (%cmp) | IN B (%tot) | OUT B (%tot) | IN pkts (%tot) | OUT pkts (%tot) |
+    +----------------------------------------+----------+------+--------+---------+----------+-------------+--------------+----------------+-----------------+-------------+--------------+----------------+-----------------+
+    | "6f27fd54-b287-4ed1-aac0-602e96ea0510" | compute1 |  0   | 351666 |    0    |   8373   |     0.0     |    100.0     |      0.0       |      100.0      |     0.0     |    100.0     |      0.0       |      100.0      |
+    +----------------------------------------+----------+------+--------+---------+----------+-------------+--------------+----------------+-----------------+-------------+--------------+----------------+-----------------+
+    
+    +----------+------+----------+---------+----------+-------------+--------------+----------------+-----------------+
+    | Compute  | IN B |  OUT B   | IN pkts | OUT pkts | IN B (%tot) | OUT B (%tot) | IN pkts (%tot) | OUT pkts (%tot) |
+    +----------+------+----------+---------+----------+-------------+--------------+----------------+-----------------+
+    | compute1 | 0.1  | 351666.1 |   0.1   |  8373.1  |    100.0    |    100.0     |     100.0      |      100.0      |
+    |  TOTAL   | 0.1  | 351666.1 |   0.1   |  8373.1  |    100.0    |    100.0     |     100.0      |      100.0      |
+    +----------+------+----------+---------+----------+-------------+--------------+----------------+-----------------+
+    
+    ***** Network: fourcade (FQDN default-domain:admin:fourcade) *****
+    Network has 3 interfaces attached to it
+    +----------------------------------------+----------+--------+--------+---------+----------+-------------+--------------+----------------+-----------------+-------------+--------------+----------------+-----------------+
+    |             Interface Name             | Compute  |  IN B  | OUT B  | IN pkts | OUT pkts | IN B (%cmp) | OUT B (%cmp) | IN pkts (%cmp) | OUT pkts (%cmp) | IN B (%tot) | OUT B (%tot) | IN pkts (%tot) | OUT pkts (%tot) |
+    +----------------------------------------+----------+--------+--------+---------+----------+-------------+--------------+----------------+-----------------+-------------+--------------+----------------+-----------------+
+    | "e7fdee27-788e-491b-a835-6a886745c182" | compute2 | 352729 | 360444 |   8263  |   8427   |     51.0    |     51.0     |      51.0      |       51.0      |     34.0    |     34.0     |      34.0      |       34.0      |
+    |                 "eth0"                 | compute2 | 337945 | 343547 |   7913  |   8018   |     49.0    |     49.0     |      49.0      |       49.0      |     32.0    |     32.0     |      32.0      |       32.0      |
+    | "cae84676-cb4a-4f2c-b862-7792e0c2fd7f" | compute1 | 354331 | 363500 |   8300  |   8486   |    100.0    |    100.0     |     100.0      |      100.0      |     34.0    |     34.0     |      34.0      |       34.0      |
+    +----------------------------------------+----------+--------+--------+---------+----------+-------------+--------------+----------------+-----------------+-------------+--------------+----------------+-----------------+
+    
+    +----------+-----------+-----------+---------+----------+-------------+--------------+----------------+-----------------+
+    | Compute  |    IN B   |   OUT B   | IN pkts | OUT pkts | IN B (%tot) | OUT B (%tot) | IN pkts (%tot) | OUT pkts (%tot) |
+    +----------+-----------+-----------+---------+----------+-------------+--------------+----------------+-----------------+
+    | compute1 |  354331.1 |  363500.1 |  8300.1 |  8486.1  |     34.0    |     34.0     |      34.0      |       34.0      |
+    | compute2 |  690674.1 |  703991.1 | 16176.1 | 16445.1  |     66.0    |     66.0     |      66.0      |       66.0      |
+    |  TOTAL   | 1045005.1 | 1067491.1 | 24476.1 | 24931.1  |    100.0    |    100.0     |     100.0      |      100.0      |
+    +----------+-----------+-----------+---------+----------+-------------+--------------+----------------+-----------------+
+
+***** Network: nono (FQDN default-domain:admin:nono) not found *****
+
+#####ALARMS (system requesting alarms)
+
+Crash file (to generate alarms)
+
+    [root@control ~]# cat crash.sh
+    ifconfig ens3f1 down
+    service ntpd stop
+    docker stop control_dns_1
+    docker stop control_named_1
+
+Restore file (to restore contrail services)
+
+    [root@control ~]# cat restore.sh
+    ifconfig ens3f1 up
+    service ntpd start
+    docker start control_dns_1
+    docker start control_named_1
+
+Output
+
+    [root@brain analytics_scripts]# python alarms.py
+    ***** Found alarms for control-node type nodes *****
+    
+    Node called -> control - Issue: Process(es) reporting as non-functional.
+    +--------------------------+---------------------------+-----------------------+
+    |       Module Name        |           Issue           | Troubling Connections |
+    +--------------------------+---------------------------+-----------------------+
+    | contrail-control-nodemgr | NTP state unsynchronized. |           -           |
+    +--------------------------+---------------------------+-----------------------+
+    
+    Node called -> control - Issue: Disk usage crosses high threshold limit.
+    
+    Node called -> control - Issue: Process Failure.
+    +----------------+----------------------+--------------------------+------------+
+    |    Process     |        State         |      Last Exit Time      | Exit count |
+    +----------------+----------------------+--------------------------+------------+
+    |  contrail-dns  | PROCESS_STATE_EXITED | Mon Apr  6 11:28:03 2020 |     6      |
+    | contrail-named | PROCESS_STATE_EXITED | Mon Apr  6 11:28:03 2020 |     2      |
+    +----------------+----------------------+--------------------------+------------+
+    
+    Node called -> control - Issue: BGP peer mismatch. Not enough BGP peers are up.
+    +---------+-------------+---------+------------+----------+----------+-------------------------------------------------------+
+    |   Peer  | Router Type |  State  | Last State | BGP type | Peer ASN |                       Last event                      |
+    +---------+-------------+---------+------------+----------+----------+-------------------------------------------------------+
+    | 1.1.1.1 |    router   | Connect |   Active   | external |   100    | fsm::EvConnectTimerExpired @ Mon Apr  6 11:29:12 2020 |
+    +---------+-------------+---------+------------+----------+----------+-------------------------------------------------------+
+    
+    ***** Found alarms for database-node type nodes *****
+    
+    Node called -> control.commandumberto.net - Issue: Process(es) reporting as non-functional.
+    +---------------------------+---------------------------+-----------------------+
+    |        Module Name        |           Issue           | Troubling Connections |
+    +---------------------------+---------------------------+-----------------------+
+    | contrail-database-nodemgr | NTP state unsynchronized. |           -           |
+    +---------------------------+---------------------------+-----------------------+
+    
+    Node called -> control.commandumberto.net - Issue: Disk usage crosses high threshold limit.
+    
+    ***** Found alarms for analytics-node type nodes *****
+    
+    Node called -> control.commandumberto.net - Issue: Process(es) reporting as non-functional.
+    +----------------------------+---------------------------+-----------------------+
+    |        Module Name         |           Issue           | Troubling Connections |
+    +----------------------------+---------------------------+-----------------------+
+    | contrail-analytics-nodemgr | NTP state unsynchronized. |           -           |
+    +----------------------------+---------------------------+-----------------------+
+    
+    Node called -> control.commandumberto.net - Issue: Disk usage crosses high threshold limit.
+    
+    ***** Found alarms for config-database-node type nodes *****
+    
+    Node called -> control.commandumberto.net - Issue: Process(es) reporting as non-functional.
+    +----------------------------------+---------------------------+-----------------------+
+    |           Module Name            |           Issue           | Troubling Connections |
+    +----------------------------------+---------------------------+-----------------------+
+    | contrail-config-database-nodemgr | NTP state unsynchronized. |           -           |
+    +----------------------------------+---------------------------+-----------------------+
+    
+    Node called -> control.commandumberto.net - Issue: Disk usage crosses high threshold limit.
+    
+    ***** Found alarms for analytics-alarm-node type nodes *****
+    
+    Node called -> control.commandumberto.net - Issue: Process(es) reporting as non-functional.
+    +----------------------------------+---------------------------+-----------------------+
+    |           Module Name            |           Issue           | Troubling Connections |
+    +----------------------------------+---------------------------+-----------------------+
+    | contrail-analytics-alarm-nodemgr | NTP state unsynchronized. |           -           |
+    +----------------------------------+---------------------------+-----------------------+
+    
+    Node called -> control.commandumberto.net - Issue: Disk usage crosses high threshold limit.
+    
+    ***** Found alarms for config-node type nodes *****
+    
+    Node called -> control.commandumberto.net - Issue: Process(es) reporting as non-functional.
+    +-------------------------+---------------------------+-----------------------+
+    |       Module Name       |           Issue           | Troubling Connections |
+    +-------------------------+---------------------------+-----------------------+
+    | contrail-config-nodemgr | NTP state unsynchronized. |           -           |
+    +-------------------------+---------------------------+-----------------------+
+    
+    Node called -> control.commandumberto.net - Issue: Disk usage crosses high threshold limit.
+    
+    ***** Found alarms for vrouter type nodes *****
+    
+    Node called -> compute1 - Issue: Process(es) reporting as non-functional.
+    +------------------------+--------------------------------------------------------------------------------+----------------------------------+
+    |      Module Name       |                                     Issue                                      |      Troubling Connections       |
+    +------------------------+--------------------------------------------------------------------------------+----------------------------------+
+    | contrail-vrouter-agent | XMPP:control-node:192.168.200.2, XMPP:dns-server:192.168.200.2 connection down | control-node:192.168.200.2(XMPP) |
+    |                        |                                                                                |     [u'192.168.200.2:5269']      |
+    |                        |                                                                                |             Connect              |
+    |                        |                                                                                |                                  |
+    |                        |                                                                                |  dns-server:192.168.200.2(XMPP)  |
+    |                        |                                                                                |      [u'192.168.200.2:53']       |
+    |                        |                                                                                |             Connect              |
+    |                        |                                                                                |                                  |
+    |                        |                                                                                |                                  |
+    +------------------------+--------------------------------------------------------------------------------+----------------------------------+
+    
+    Node called -> compute2 - Issue: Process(es) reporting as non-functional.
+    +------------------------+--------------------------------------------------------------------------------+----------------------------------+
+    |      Module Name       |                                     Issue                                      |      Troubling Connections       |
+    +------------------------+--------------------------------------------------------------------------------+----------------------------------+
+    | contrail-vrouter-agent | XMPP:control-node:192.168.200.2, XMPP:dns-server:192.168.200.2 connection down | control-node:192.168.200.2(XMPP) |
+    |                        |                                                                                |     [u'192.168.200.2:5269']      |
+    |                        |                                                                                |             Connect              |
+    |                        |                                                                                |                                  |
+    |                        |                                                                                |  dns-server:192.168.200.2(XMPP)  |
+    |                        |                                                                                |      [u'192.168.200.2:53']       |
+    |                        |                                                                                |             Connect              |
+    |                        |                                                                                |                                  |
+    |                        |                                                                                |                                  |
+    +------------------------+--------------------------------------------------------------------------------+----------------------------------+
+
+#####ALARMS STREAM (system receiving alarms)
+
+    [root@brain analytics_scripts]# python stream.py
+    New Event @ Mon Apr  6 12:08:32 2020
+    NODE: control
+    Object Type: ObjectBgpRouter
+        ALARM: BGP peer mismatch. Not enough BGP peers are up.
+    
+    New Event @ Mon Apr  6 12:08:45 2020
+    NODE: control.commandumberto.net
+    Object Type: ObjectConfigDatabaseInfo
+        ALARM: Process(es) reporting as non-functional.
+    
+    New Event @ Mon Apr  6 12:08:49 2020
+    NODE: control
+    Object Type: ObjectBgpRouter
+        ALARM: Process Failure.
+        ALARM: BGP peer mismatch. Not enough BGP peers are up.
+    
+    New Event @ Mon Apr  6 12:08:59 2020
+    NODE: control.commandumberto.net
+    Object Type: ObjectDatabaseInfo
+        ALARM: Process(es) reporting as non-functional.
+    
+    New Event @ Mon Apr  6 12:09:19 2020
+    NODE: control
+    Object Type: ObjectBgpRouter
+        ALARM: Process(es) reporting as non-functional.
+        ALARM: Process Failure.
+        ALARM: BGP peer mismatch. Not enough BGP peers are up.
+    
+    New Event @ Mon Apr  6 12:09:29 2020
+    NODE: control.commandumberto.net
+    Object Type: ObjectAnalyticsAlarmInfo
+        ALARM: Process(es) reporting as non-functional.
+    
+    New Event @ Mon Apr  6 12:09:41 2020
+    NODE: control.commandumberto.net
+    Object Type: ObjectConfigNode
+        ALARM: Process(es) reporting as non-functional.
+    
+    New Event @ Mon Apr  6 12:09:42 2020
+    NODE: control.commandumberto.net
+    Object Type: ObjectCollectorInfo
+        ALARM: Process(es) reporting as non-functional.
+    
+    New Event @ Mon Apr  6 12:09:55 2020
+    NODE: compute2
+    Object Type: ObjectVRouter
+        ALARM: Process(es) reporting as non-functional.
+    
+    New Event @ Mon Apr  6 12:10:01 2020
+    NODE: compute1
+    Object Type: ObjectVRouter
+        ALARM: Process(es) reporting as non-functional.
+
+#####

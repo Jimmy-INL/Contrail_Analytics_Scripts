@@ -1,0 +1,8 @@
+domains:
+  - name: "default-domain"
+    projects:
+      - name: "admin"
+        networks:
+          - "wierer"
+          - "fourcade"
+          - "nono"
